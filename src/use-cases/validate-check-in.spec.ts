@@ -57,6 +57,6 @@ describe('Validate Check-in use case', () => {
       sut.execute({
         checkInId: createdCheckIn.id,
       }),
-    ).toBeInstanceOf(LateCheckInValidationError)
+    ).rejects.toBeInstanceOf(LateCheckInValidationError)
   })
 })
