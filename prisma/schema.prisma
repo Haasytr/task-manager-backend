@@ -10,46 +10,46 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Role {
-  ADMIN
-  MEMBER
-}
-
 model User {
   id String @id @default(uuid())
 
   name          String
-  email         String    @unique
+  email         String   @unique
   password_hash String
-  created_at    DateTime  @default(now())
-  CheckIns      CheckIn[]
-  role          Role      @default(MEMBER)
+  Lists         List[]
+  created_at    DateTime @default(now())
 
   @@map("users")
 }
 
-model CheckIn {
-  id           String    @id @default(uuid())
-  created_at   DateTime  @default(now())
-  validated_at DateTime?
+model List {
+  id    String @id @default(uuid())
+  title String
 
-  gym    Gym    @relation(fields: [gym_id], references: [id])
-  gym_id String
+  userId String
 
-  user    User   @relation(fields: [user_id], references: [id])
-  user_id String
+  cards Card[]
 
-  @@map("check_ins")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  User User @relation(fields: [userId], references: [id])
+
+  @@map("lists")
 }
 
-model Gym {
-  id          String    @id @default(uuid())
+model Card {
+  id          String  @id @default(uuid())
   title       String
-  description String?
-  phone       String?
-  latitude    Decimal
-  longitude   Decimal
-  CheckIns    CheckIn[]
+  description String  @db.Text
+  finished    Boolean @default(false)
 
-  @@map("gyms")
+  listId String
+  list   List   @relation(fields: [listId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([listId])
+  @@map("cards")
 }
